@@ -3,12 +3,14 @@
 
 int blueTx=2;//TX(보내는핀 설정)
 int blueRx=3;//Rx(받는핀)
-SoftwareSerial mySerial(blueTx, blueRx);//시러얼 통신을 위한 객체선언
+
+SoftwareSerial mySerial(blueTx, blueRx);
+//시러얼 통신을 위한 객체선언
 
 
 
 DistanceGP2Y0A21YK Dist1, Dist2;
-int distance1, distance2;
+int distance1, distance2; //바깥쪽, 안쪽
 int flag1, flag2;
 int state;
 int testCount = 2;
@@ -18,8 +20,11 @@ int passPoint = 20;
 void setup()
 {
   Serial.begin(9600);
+  //블루투스
+  //시리얼포트의 통신속도를 9600 bps로 시작한다
   mySerial.begin(9600);
-  //Dist 초기화
+  //Dist 초기화(적외선)
+  // BTSerial 포트의 통신속도를 9600 bps로 시작한다
   Dist1.begin(0);
   Dist2.begin(1);
   //Dist1.setARefVoltage(5);
@@ -34,16 +39,19 @@ void loop()
 {
 
 if(mySerial.available()){
-  Serial.write(mySerial.read());//블루투스측 내용을 시리얼모니터에 출력
+  Serial.write(mySerial.read());
+  //블루투스측 내용을 시리얼모니터에 출력
+ 
 }
 if(Serial.available()){
-  mySerial.write(Serial.read());//시리얼 모니터 내용을 블루투스측에 write
+  mySerial.write(Serial.read());
+  //시리얼 모니터 내용을 블루투스측에 write
 }
 
   
   //
   while(1){
-
+//distance 1 바깥쪽센서 , distance2 
     for(int i=0; i<1; i++){
             //state0==============================================================================
             if(state ==0){
@@ -53,15 +61,15 @@ if(Serial.available()){
                   distance1 = Dist1.getDistanceCentimeter();
                   if(distance1 <passPoint){ count1++;    }
                 }
-         
+                
                 if(count1 >=testCount*passRate){ 
                   flag1=1;
                   state =2;
                   continue;
                 }
-
-
-
+                  //0->2 들어가는거 
+                
+                //나가는거
                 for(int i=0; i<testCount; i++){
                   distance2 = Dist2.getDistanceCentimeter();
                   if(distance2 <passPoint){ count2++;    }
@@ -101,7 +109,7 @@ if(Serial.available()){
                 if(count2 >=testCount*passRate){
                   
                  int byteSent =  mySerial.write("i");
-                  //들어옴 처리 
+                  //들어옴 처리 //i를 블루투스 통신을 이용해서 보내라.
              
                  Serial.print("\n들어옴");
                   state= 10;
@@ -156,7 +164,7 @@ if(Serial.available()){
 
 
 
-          
+          //컴터에 
           Serial.print("\n");
           Serial.print("[flag1");
           Serial.print(flag1);
